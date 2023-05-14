@@ -1,5 +1,5 @@
 import sqlite3
-from fire import Cause, Fire, datetime, time
+from fire import Fire, datetime 
 
 class Database:
 
@@ -59,9 +59,11 @@ class Database:
         query = '''SELECT * FROM `Fires` WHERE 
                 `DISCOVERY_DATE` IS NOT NULL AND 
                 `DISCOVERY_TIME` IS NOT NULL AND
+                `DISCOVERY_TIME` != "" AND
                 `CONT_DATE` IS NOT NULL AND 
-                `CONT_TIME` IS NOT NULL
-                LIMIT 5000'''
+                `CONT_TIME` IS NOT NULL AND 
+                `CONT_TIME` != "" AND
+                `NWCG_GENERAL_CAUSE` != "Missing data/not specified/undetermined"'''
         res = self.cursor.execute(query)
         rows = res.fetchall()
         fires = list()
