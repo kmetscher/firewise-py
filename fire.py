@@ -1,5 +1,7 @@
 from enum import Enum
-from datetime import datetime, date, time, timedelta
+from datetime import datetime, time
+
+import numpy
 
 class Category(Enum):
     NATURAL = 0
@@ -48,8 +50,8 @@ class Fire:
         return Cause.OTHER
 
     def __init__(self, fpa_id: str, name: str, cause: str, 
-            discovery_date: date, discovery_time: time, 
-            discovery_doy: int, containment_date: date, 
+            discovery_date: datetime, discovery_time: time, 
+            discovery_doy: int, containment_date: datetime, 
             containment_time: time, containment_doy: int,
             size: float, latitude: float, longitude: float, 
             state: str) -> None:
@@ -71,16 +73,19 @@ class Fire:
         self.longitude = longitude
         self.state = state
         
-    def get_independent_attributes(self) -> list:
-        return [self.discovery_date.timestamp(), 
+    def get_independent_attributes(self, np = False) -> list | numpy.ndarray:
+        attributes = [int(self.discovery_date.timestamp()), 
                 self.discovery_time,
                 self.discovery_doy,
-                self.containment_date.timestamp(), 
+                int(self.containment_date.timestamp()), 
                 self.containment_time,
                 self.containment_doy,
-                self.latitude, 
-                self.longitude,
+                float(self.latitude), 
+                float(self.longitude),
                 self.size]
+        if np:
+            return numpy.array(attributes)
+        return attributes
 
     def pretty_print(self) -> None:
         print("{}: {}, {}".format(self.fpa_id, self.name, self.state))

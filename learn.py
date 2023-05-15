@@ -1,19 +1,19 @@
 from sklearn.ensemble import RandomForestClassifier
-# from sklearn.neural_network import MLPClassifier
 import db
 from fire import Cause
 import random
 import argparse
 from datetime import datetime
-from joblib import dump, load
+from joblib import dump 
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-v", "--verbose", help = "Print verbose", action="store_true", dest = "verbose")
-parser.add_argument("-n", "-nsamples", help = "Number of training samples", default = 5000, type = int, dest = "nsamples")
+parser.add_argument("-n", "--nsamples", help = "Number of training samples", default = 5000, type = int, dest = "nsamples")
 parser.add_argument("-r", "--rounds", help = "Number of training rounds", default = 1, dest = "rounds", type = int)
 parser.add_argument("-o", "--output-file", help = "Name of file to save model to", default = "model.joblib", dest = "filename", type = str)
 parser.add_argument("-a", "--all", help = "Train over the entire database", default = False, dest = "all", action = "store_true")
 parser.add_argument("-e", "--estimators", help = "Number of estimators", default = 100, type = int, dest = "estimators")
+parser.add_argument("-s", "--split", help = "Fraction split for training and testing sets", default = 2, type = int, dest = "split")
 args = parser.parse_args()
 
 def timestamp(message: str) -> None:
@@ -34,10 +34,10 @@ def run(rounds: int):
         if args.all:
             fires = database.get_all_clean_fires()
         random.shuffle(fires)
-        pivot = int(len(fires) / 2)
-        timestamp("Training on {} fires (round {})".format(pivot, i + 1))
-        training_fires = fires[:pivot]
-        testing_fires = fires[pivot:]
+        pivot = int(len(fires) / args.split)
+        training_fires = fires[pivot:]
+        testing_fires = fires[:pivot]
+        timestamp("Training on {} fires (round {})".format(len(training_fires), i + 1))
         sample_matrix = list()
         labels = list()
 
